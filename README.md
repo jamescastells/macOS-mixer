@@ -2,7 +2,7 @@
 
 A lightweight menu-bar app for macOS that gives you a per-app volume mixer, plus control of the system output volume, all in one small panel.
 
-![Sound Mixer in the menu bar](screenshot.png)
+![macOS-mixer in the menu bar](screenshot.png)
 
 ## Installation
 
@@ -10,7 +10,7 @@ A lightweight menu-bar app for macOS that gives you a per-app volume mixer, plus
 2. Unzip the downloaded archive to get `macOS-mixer.app`.
 3. Move `macOS-mixer.app` into your **Applications** folder.
 4. Open the app from Applications. It appears in the menu bar as a sliders icon (no Dock icon window).
-5. When prompted, allow audio access. If an app's volume can't be controlled, go to **System Settings › Privacy & Security › Screen & System Audio Recording** and enable Sound Mixer.
+5. When prompted, allow audio access. If an app's volume can't be controlled, go to **System Settings › Privacy & Security › Screen & System Audio Recording** and enable macOS-mixer.
 
 ## Features
 

@@ -16,7 +16,7 @@ struct macOS_mixerApp: App {
     }
 
     var body: some Scene {
-        MenuBarExtra("Sound Mixer", systemImage: "slider.vertical.3") {
+        MenuBarExtra("macOS-mixer", systemImage: "slider.vertical.3") {
             ContentView(model: model)
         }
         .menuBarExtraStyle(.window)
