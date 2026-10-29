@@ -37,6 +37,9 @@ final class MixerModel {
     /// What the device really outputs right now (amplitude 0...1); used to compensate app gains.
     @ObservationIgnored private var deviceAmplitude: Float = 0
     @ObservationIgnored private var sessions: [String: TapSession] = [:]
+    @ObservationIgnored private var idleSince: [String: Date] = [:]   // app id -> when its tapped audio went silent
+    private static let idleTapTimeout: TimeInterval = 3
+    private static let unityGain: Float = 0.999
     @ObservationIgnored private var failures: [String: String] = [:]   // app id -> failing configuration
     @ObservationIgnored private var failureMessages: [String: String] = [:]
     @ObservationIgnored private var latestApps: [String: AudioApp] = [:]
@@ -161,6 +164,7 @@ final class MixerModel {
         for id in sessions.keys where latestApps[id] == nil {
             sessions[id]?.stop()
             sessions[id] = nil
+            idleSince[id] = nil
         }
         for app in apps { sync(app) }
 
@@ -174,12 +178,31 @@ final class MixerModel {
         errorMessage = failureMessages.values.sorted().first
     }
 
-    /// Makes the tap for `app` match the desired gain. A tap is created as soon as the app plays and kept
-    /// until the app goes away, so moving the slider only changes gain; creating or destroying a tap
-    /// mid-playback causes an audible click.
+    /// Makes the tap for `app` match the desired gain. A tap is created once the app plays and needs attenuation,
+    /// and kept while it plays, so moving the slider only changes gain; creating or destroying a tap
+    /// mid-playback causes an audible click. Once the app has been silent, or back at unity gain, for `idleTapTimeout`
+    /// the tap is removed.
+    /// Any active tap shows the system's purple recording indicator, so apps at unity gain aren't tapped at all.
     private func sync(_ app: AudioApp) {
         let gain = effectiveGain(for: app.id)
-        guard app.isPlaying || sessions[app.id] != nil else { return }
+        // Floating-point error in the volume compensation can leave "full volume" a hair under 1.
+        let needsTap = gain < Self.unityGain
+        guard (app.isPlaying && needsTap) || sessions[app.id] != nil else { return }
+
+        if sessions[app.id] != nil {
+            if app.isPlaying && needsTap {
+                idleSince[app.id] = nil
+            } else {
+                let since = idleSince[app.id] ?? .now
+                idleSince[app.id] = since
+                if Date.now.timeIntervalSince(since) >= Self.idleTapTimeout {
+                    sessions[app.id]?.stop()
+                    sessions[app.id] = nil
+                    idleSince[app.id] = nil
+                    return
+                }
+            }
+        }
         guard let outputUID = CoreAudioHelpers.defaultOutputDeviceUID() else { return }
 
         if let session = sessions[app.id] {
