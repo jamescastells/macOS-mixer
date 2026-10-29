@@ -1,4 +1,4 @@
-# Sound Mixer
+# macOS-mixer
 
 A lightweight menu-bar app for macOS that gives you a per-app volume mixer, plus control of the system output volume, all in one small panel.
 
@@ -6,7 +6,7 @@ A lightweight menu-bar app for macOS that gives you a per-app volume mixer, plus
 
 ## Installation
 
-1. Download the app's `.zip` file from the **Releases** page of this repository.
+1. Download the app's `.zip` file from the [**Releases**](https://github.com/jamescastells/macOS-mixer/releases/latest) page of this repository.
 2. Unzip the downloaded archive to get `macOS-mixer.app`.
 3. Move `macOS-mixer.app` into your **Applications** folder.
 4. Open the app from Applications. It appears in the menu bar as a sliders icon (no Dock icon window).
